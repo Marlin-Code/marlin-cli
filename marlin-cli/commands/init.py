@@ -48,10 +48,10 @@ def init(archetype, directory):
 
   archive = tarfile.open(f"{archetype}.tar")
   archive.extractall()
+  os.remove(f"{archetype}.tar")
   extracted_dirname = os.listdir(project_path)[0]
   shutil.copytree(os.path.join(os.getcwd(), extracted_dirname), os.getcwd(), dirs_exist_ok=True)
   shutil.rmtree(os.path.join(os.getcwd(), extracted_dirname))
-  os.remove(f"{archetype}.tar")
 
   click.echo(click.style(f"Creating marlinconf.json...", fg="green"))
   base_marlin_config = {
@@ -63,10 +63,10 @@ def init(archetype, directory):
   
   click.echo(click.style(f"Initializing Git repository", fg="green"))
   repo = Repo.init(project_path)
-  repo.git.add(all=True)
-  repo.git.commit('-m', 'Initial Commit')
 
   click.echo(click.style(f"Installing npm modules", fg="green"))
   subprocess.call(["npm","install"])
+  repo.git.add(all=True)
+  repo.git.commit('-m', 'Initial Commit')
   click.echo(click.style(f"Successfully initialized {archetype} at {project_path}", fg="green"))
   
