@@ -13,6 +13,7 @@ def docs(name):
     if error is not None:
         click.echo(click.style("The requested entity does not exist.", fg="red"))
         sys.exit(1)
+
     click.echo("\n")
     click.echo(
         f"Documentation available at: {click.style(archetype_details['documentation_url'], fg='blue')}"
