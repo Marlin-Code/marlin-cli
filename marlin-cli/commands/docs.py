@@ -8,10 +8,8 @@ import os
 @click.argument('NAME')
 def docs(name):
   """Fetches the documentation url for the Marlin archetype or module NAME"""
-  archetype_details = archetypes.get_archetype(archetype_name=name)
-  click.echo(constants.API_URL)
-
-  if (not(archetype_details)):
+  (archetype_details, error) = archetypes.get_archetype(archetype_name=name)
+  if (error is not None):
     click.echo(click.style("The requested entity does not exist.", fg="red"))
     sys.exit(1)
   click.echo('\n')
