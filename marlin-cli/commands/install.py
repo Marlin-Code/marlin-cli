@@ -6,7 +6,7 @@ import subprocess
 import tarfile
 import requests
 import shutil
-from api import modules
+from api import modules, archetypes
 from util import yaml_merge
 from util import json_merge
 
@@ -54,9 +54,8 @@ def resolve_npm_deps(module_conf):
     
 
 def update_dependencies(archetype_name, module_conf): 
-    # (arch_conf, err) = archetypes.get_archetype(archetype_name)
-    # pm = arch_conf.get("package_manager") todo: add package_manager to cli-backend
-    pm = "package.json"
+    (arch_conf, _) = archetypes.get_archetype(archetype_name)
+    pm = arch_conf.get("package_manager")
     if not os.path.exists(pm):
         click.echo(click.style(f'{pm} does not exist in this directory. Unable to install required dependencies', fg='red'))
         sys.exit(1)
@@ -122,4 +121,6 @@ def install(module):
     # update the project with other dependencies
     update_dependencies(module_details)
     update_project(module_details.get)
+    
+    click.echo(click.style(f"Successfully installed {module}", fg="green"))
     

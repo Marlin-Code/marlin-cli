@@ -11,7 +11,7 @@ def get_module(module_name):
         error = {"code": response.status_code, "message": response.content}
     return (module, error)
 
-def list_archetype():
+def list_modules():
     module_list = None
     error = None
     response = requests.get(url=f"{constants.API_URL}/modules")
