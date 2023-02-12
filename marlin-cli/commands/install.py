@@ -3,28 +3,36 @@ import json
 import sys
 import os
 import subprocess
-from api import archetypes
+import tarfile
+import requests
+import shutil
+from api import modules
+from util import yaml_merge
+from util import json_merge
 
-TEST_MODULE_CONF = {
-    "dependencies": {
-        "react": "^18.2.0",
-        "react-dom": "^18.2.0"
-    },
-    "devDependencies": {
-        "jest": "^29.2.1"
-    },
-    "install_hook": {
-        "react-js": {
-            "path": "/pages"
-        }
-    }
-}
+def update_project(module_details, project_root): 
+    project_files = module_details.get("project_updates")
+    for source, destination in project_files:
+        project_dest = os.path.join(project_root, destination)
+        _, file_extension = os.path.splitext(source)
+        match file_extension:
+            case '.json': 
+                json_merge(source, project_dest)
+            case '.yaml' | '.yml': 
+                yaml_merge(source, project_dest)
+            case other: 
+                click.echo(click.style(f'Merge unsupported for file extension {other}', fg='red'))
+                sys.exit(1)
+
+def copy_source(module_details, project_root):
+    source_targets = module_details.get("raw_source_code")
+    
+    for source, destination in source_targets:
+        shutil.copytree(source, os.path.join(project_root, destination), dirs_exist_ok=True)
 
 def resolve_npm_deps(module_conf):
-    """_summary_ 
-
-    Args:
-        module_conf (_type_): _description_
+    """
+    Compare source and target package.json dependencies. Adds missing dependencies.
     """
     with open('package.json', 'r') as f: 
         package_json = json.load(f)
@@ -45,8 +53,8 @@ def resolve_npm_deps(module_conf):
             subprocess.call(["npm", "install", dep])
     
 
-def dependency_check(archetype_name, module_conf): 
-    (arch_conf, err) = archetypes.get_archetype(archetype_name)
+def update_dependencies(archetype_name, module_conf): 
+    # (arch_conf, err) = archetypes.get_archetype(archetype_name)
     # pm = arch_conf.get("package_manager") todo: add package_manager to cli-backend
     pm = "package.json"
     if not os.path.exists(pm):
@@ -67,16 +75,51 @@ def install(module):
     """
     Installs the module MOUDLE in this project
     """
-    # Require running from root
+    # Require running from marlin root
     if not os.path.exists('marlinconf.json'):
         click.echo(click.style(f'marlinconf does not exist in this directory', fg='red'))
         sys.exit(1)
+    (module_details, error) = modules.get_module(module_name=module)
+    if (error):
+        click.echo(click.style(f"The requested module `{module}` does not exist.", fg="red"))
+        sys.exit(1)
+    click.echo(f"Found module: {module_details}")
+    
     with open('marlinconf.json', 'r') as f: 
         marlinconf = json.load(f)
     
     project_archetype = marlinconf.get('archetype')
     click.echo(click.style(f"Installing {module} for archetype {project_archetype}", fg='green'))
     
-    dependency_check(project_archetype, TEST_MODULE_CONF)
+    # todo: fetch module and version
+    repository = module_details.get("repository")
+    url = f"https://api.github.com/repos/{repository.get('owner')}/{repository.get('repo_name')}/tarball/1.0.0"
+    click.echo(f"Fetching module from {url}")
+    response = requests.get(
+        url=url,
+        headers={
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+        },
+    )
+    click.echo(click.style(f"Received module source. Writing tarball", fg="green"))
     
-    click.echo(click.style(f"Completed {module} for archetype {project_archetype}!", fg='green'))
+    project_root = os.getcwd()
+    # write temp dir
+    os.mkdir('marlin-tmp/')
+    os.chdir('marlin-tmp/')
+    
+    with open(f"{module}.tar", "wb") as fp:
+        fp.write(response.content)
+    
+    archive = tarfile.open(f"{module}.tar")
+    archive.extractall()
+    os.remove(f"{module}.tar")
+    
+    # copy source files to their target dirs
+    copy_source(module_details, project_root)
+    
+    # update the project with other dependencies
+    update_dependencies(module_details)
+    update_project(module_details.get)
+    
