@@ -21,6 +21,3 @@ def json_merge(source, destination):
     
     with open(destination, 'w') as d:
       json.dump(destination_json, d, indent=2)
-
-if __name__ == "__main__":
-  json_merge('test_json.json', '../../something/package.json')
