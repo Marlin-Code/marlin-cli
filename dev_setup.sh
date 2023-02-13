@@ -30,7 +30,7 @@ install_poetry() {
   if [ -d "${HOME}/Library/Application Support/pypoetry" ]; then
     echo "Poetry already installed. Skipping..."
   else
-    curl -sSL https://install.python-poetry.org | python3
+    curl -sSL https://install.python-poetry.org | python
     echo "Add 'export PATH="\$HOME/.local/bin:\$PATH"' to your shell config and restart"
   fi
 }

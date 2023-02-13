@@ -56,17 +56,15 @@ def resolve_npm_deps(module_conf):
 def update_dependencies(archetype_name, module_conf): 
     (arch_conf, _) = archetypes.get_archetype(archetype_name)
     pm = arch_conf.get("package_manager")
-    if not os.path.exists(pm):
-        click.echo(click.style(f'{pm} does not exist in this directory. Unable to install required dependencies', fg='red'))
-        sys.exit(1)
-    
-    match pm: 
-        case 'package.json': 
+    match pm:
+        case 'npm':
+            if not os.path.exists(pm):
+                click.echo(click.style(f'{pm} does not exist in this directory. Unable to install required dependencies', fg='red'))
+                sys.exit(1)
             resolve_npm_deps(module_conf)
-        case _: 
-            click.echo(click.style(f'Unrecognized or Unsupported package manager {pm}', fg='red'))
+        case other: 
+            click.echo(click.style(f'Unrecognized or Unsupported package manager {other}', fg='red'))
             sys.exit(1)
-        
 
 @click.command()
 @click.argument("module")
@@ -105,8 +103,11 @@ def install(module):
     
     project_root = os.getcwd()
     # write temp dir
-    os.mkdir('marlin-tmp/')
-    os.chdir('marlin-tmp/')
+    if os.path.exists('marlin-tmp'):
+        click.echo(click.style(f"A `marlin-tmp` directory already exists. Please remove it and try again.", fg="red"))
+        sys.exit(1)
+    os.mkdir('marlin-tmp')
+    os.chdir('marlin-tmp')
     
     with open(f"{module}.tar", "wb") as fp:
         fp.write(response.content)
@@ -120,7 +121,10 @@ def install(module):
     
     # update the project with other dependencies
     update_dependencies(module_details)
-    update_project(module_details.get)
+    update_project(module_details)
+    
+    os.chdir(project_root)
+    os.rmdir('marlin-tmp')
     
     click.echo(click.style(f"Successfully installed {module}", fg="green"))
     
