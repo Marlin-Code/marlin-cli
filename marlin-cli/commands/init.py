@@ -18,7 +18,7 @@ def init(archetype, directory):
     Creates a new Marlin project based on ARCHETYPE at DIRECTORY
     """
 
-    archetype_details = archetypes.get_archetype(archetype_name=archetype)
+    (archetype_details, error) = archetypes.get_archetype(archetype_name=archetype)
     if not (archetype_details):
         click.echo(click.style("The requested archetype does not exist.", fg="red"))
         sys.exit(1)

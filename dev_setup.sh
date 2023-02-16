@@ -31,13 +31,12 @@ install_poetry() {
     echo "Poetry already installed. Skipping..."
   else
     curl -sSL https://install.python-poetry.org | python
-    echo "Add 'export PATH="$HOME/.local/bin:$PATH"' to your shell config and restart
+    echo "Add 'export PATH="\$HOME/.local/bin:\$PATH"' to your shell config and restart"
   fi
 }
 index_main() {
     install_pyenv
-    install_poetry
-    
+    install_poetry    
 }
 
 index_main
