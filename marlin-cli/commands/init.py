@@ -33,7 +33,7 @@ def init(archetype, directory):
     os.chdir(project_path)
 
     repository = archetype_details.get("repository")
-    url = f"https://api.github.com/repos/{repository.get('owner')}/{repository.get('repo_name')}/tarball/1.0.0"
+    url = f"https://api.github.com/repos/{repository.get('owner')}/{repository.get('repo_name')}/tarball/{repository.get('version')}"
     click.echo(click.style(f"Fetching archetype at {url}", fg="green"))
     response = requests.get(
         url=url,
