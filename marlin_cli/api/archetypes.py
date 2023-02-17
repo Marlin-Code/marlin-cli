@@ -11,3 +11,14 @@ def get_archetype(archetype_name):
     else:
         error = {"code": response.status_code, "message": response.content}
     return (archetype, error)
+
+
+def list_archetypes():
+    module_list = None
+    error = None
+    response = requests.get(url=f"{constants.API_URL}/archetypes/available")
+    if response.ok:
+        module_list = response.json()
+    else:
+        error = {"code": response.status_code, "message": response.content}
+    return (module_list, error)

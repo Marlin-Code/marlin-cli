@@ -16,7 +16,7 @@ def get_module(module_name):
 def list_modules():
     module_list = None
     error = None
-    response = requests.get(url=f"{constants.API_URL}/modules")
+    response = requests.get(url=f"{constants.API_URL}/modules/available")
     if response.ok:
         module_list = response.json()
     else:
