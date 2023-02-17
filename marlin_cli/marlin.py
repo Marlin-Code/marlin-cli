@@ -12,9 +12,9 @@ def cli():
 
 
 cli.add_command(init)
-cli.add_command(docs)
 cli.add_command(install)
 cli.add_command(list)
+cli.add_command(docs)
 
 if __name__ == "__main__":
     cli()
