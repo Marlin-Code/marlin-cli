@@ -7,7 +7,7 @@ import tarfile
 import shutil
 import subprocess
 from git import Repo
-from api import archetypes
+from marlin_cli.api import archetypes
 
 
 @click.command()

@@ -1,7 +1,7 @@
 import click
 import sys
-from api import archetypes
-import constants
+from marlin_cli.api import archetypes
+import marlin_cli.constants as constants
 import os
 
 

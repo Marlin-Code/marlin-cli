@@ -6,9 +6,9 @@ import subprocess
 import tarfile
 import requests
 import shutil
-from api import modules, archetypes
-from util import yaml_merge
-from util import json_merge
+from marlin_cli.api import modules, archetypes
+from marlin_cli.util import yaml_merge
+from marlin_cli.util import json_merge
 
 
 def update_project(module_install_conf):

@@ -1,5 +1,6 @@
 import requests
-import constants
+import marlin_cli.constants as constants
+
 
 def get_module(module_name):
     module = None
@@ -10,6 +11,7 @@ def get_module(module_name):
     else:
         error = {"code": response.status_code, "message": response.content}
     return (module, error)
+
 
 def list_modules():
     module_list = None

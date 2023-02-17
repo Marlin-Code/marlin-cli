@@ -1,5 +1,5 @@
 import requests
-import constants
+import marlin_cli.constants as constants
 
 
 def get_archetype(archetype_name):
