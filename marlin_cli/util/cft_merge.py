@@ -1,16 +1,18 @@
-import yaml
-import click 
+import click
+from cfn_tools import load_yaml, dump_yaml
 
-def yaml_merge(source, destination):
+def cft_merge(source, destination):
     """
-    Add source json objects to destination yaml
+    Add source objects from a CFT to destination CFT
     """
     with open(source, "r") as s:
-        source_yaml = yaml.safe_load(s)
+      raw = s.read()
+      source_cft = load_yaml(raw)
     with open(destination, "r") as d:
-        destination_yaml = yaml.safe_load(d)
+      raw =  d.read()
+      destination_cft = load_yaml(raw)
     
-    if not destination_yaml:
+    if not destination_cft:
         click.echo(click.style(f'Unable to parse yaml file. Ensure that it is properly formatted and try again.', fg='red'))
         raise Exception('ParseException: Unable to parse yaml file.')
     
@@ -18,11 +20,11 @@ def yaml_merge(source, destination):
         if isinstance(source, dict):
             for key, val in source.items():
                 if not dest or key not in dest:
-                    dest[key] = val
+                  dest[key] = val
                 
                 item_gen(val, dest[key])
 
-    item_gen(source_yaml, destination_yaml)
+    item_gen(source_cft, destination_cft)
 
     with open(destination, "w") as d:
-        yaml.dump(destination_yaml, d, default_flow_style=False)
+        d.write(dump_yaml(destination_cft))
