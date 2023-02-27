@@ -7,8 +7,9 @@ import tarfile
 import requests
 import shutil
 from marlin_cli.api import modules, archetypes
-from marlin_cli.util import yaml_merge
+from marlin_cli.util import cft_merge
 from marlin_cli.util import json_merge
+from marlin_cli.util import yaml_merge
 
 
 def update_project(module_install_conf):
@@ -21,7 +22,8 @@ def update_project(module_install_conf):
             case ".json":
                 json_merge(module_source, destination)
             case ".yaml" | ".yml":
-                yaml_merge(module_source, destination)
+                # handles cfts and regular yaml format
+                cft_merge(module_source, destination)
             case other:
                 click.echo(
                     click.style(
