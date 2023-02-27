@@ -1,2 +1,2 @@
 #!/bin/bash
-pyinstaller --onefile marlin-cli/marlin.py --clean
+pyinstaller --onefile marlin_cli/marlin.py --clean

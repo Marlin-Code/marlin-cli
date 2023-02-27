@@ -25,11 +25,7 @@ def update_project(module_install_conf):
                 # handles cfts and regular yaml format
                 cft_merge(module_source, destination)
             case other:
-                click.echo(
-                    click.style(
-                        f"Merge unsupported for file extension {other}", fg="red"
-                    )
-                )
+                click.secho(f"Merge unsupported for file extension {other}", fg="red")
                 sys.exit(1)
 
 
@@ -102,16 +98,12 @@ def install(module):
     """
     # Require running from marlin root
     if not os.path.exists("marlinconf.json"):
-        click.echo(
-            click.style(f"marlinconf does not exist in this directory", fg="red")
-        )
+        click.secho(f"marlinconf does not exist in this directory", fg="red")
         sys.exit(1)
 
     (module_details, error) = modules.get_module(module_name=module)
     if error:
-        click.echo(
-            click.style(f"The requested module `{module}` does not exist.", fg="red")
-        )
+        click.secho(f"The requested module `{module}` does not exist.", fg="red")
         sys.exit(1)
     click.echo(f"Found module: {module_details}")
 
@@ -119,15 +111,12 @@ def install(module):
         marlinconf = json.load(f)
 
     project_archetype = marlinconf.get("archetype")
-    click.echo(
-        click.style(
-            f"Installing {module} for archetype {project_archetype}", fg="green"
-        )
-    )
+    click.secho(f"Installing {module} for archetype {project_archetype}", fg="green")
 
     # todo: fetch module and version
     repository = module_details.get("repository")
-    url = f"https://api.github.com/repos/{repository.get('owner')}/{repository.get('repo_name')}/tarball/{repository.get('version')}"
+    # url = f"https://api.github.com/repos/{repository.get('owner')}/{repository.get('repo_name')}/tarball/{repository.get('version')}"
+    url = f"https://api.github.com/repos/{repository.get('owner')}/{repository.get('repo_name')}/tarball/developer_tasks"
     click.echo(f"Fetching module from {url}")
     response = requests.get(
         url=url,
@@ -136,16 +125,14 @@ def install(module):
             "X-GitHub-Api-Version": "2022-11-28",
         },
     )
-    click.echo(click.style(f"Received module source. Writing tarball", fg="green"))
+    click.secho(f"Received module source. Writing tarball", fg="green")
 
     project_root = os.getcwd()
     # write temp dir
     if os.path.exists("marlin-tmp"):
-        click.echo(
-            click.style(
-                f"A `marlin-tmp` directory already exists. Please remove it and try again.",
-                fg="red",
-            )
+        click.secho(
+            f"A `marlin-tmp` directory already exists. Please remove it and try again.",
+            fg="red",
         )
         sys.exit(1)
     os.mkdir("marlin-tmp")
@@ -183,4 +170,15 @@ def install(module):
 
     shutil.rmtree("marlin-tmp")
 
-    click.echo(click.style(f"Successfully installed {module}", fg="green"))
+    developer_tasks = module_install_conf.get("developer_tasks")
+    if developer_tasks:
+        click.secho(f"Main install of {module} completed successfully", fg="white")
+        click.secho(
+            f"\nTo complete installing {module}, you must complete the following dev tasks:\n",
+            fg="yellow",
+        )
+        for task in developer_tasks:
+            click.secho(f"- {task}\n", fg="cyan")
+            click.secho("----")
+    else:
+        click.secho(f"\nSuccessfully installed {module}", fg="green")
