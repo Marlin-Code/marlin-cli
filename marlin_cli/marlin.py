@@ -6,7 +6,7 @@ import click
 
 
 @click.group()
-@click.version_option("0.0.13")
+@click.version_option("0.0.0")
 def cli():
     pass
 
