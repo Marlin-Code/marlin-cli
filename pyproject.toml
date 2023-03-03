@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "marlin-cli"
-version = "0.0.13"
+version = "0.0.0"
 description = ""
 authors = ["George Cooper <george@marlincode.com>"]
 readme = "README.md"
