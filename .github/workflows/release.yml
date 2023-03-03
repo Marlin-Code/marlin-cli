@@ -24,10 +24,8 @@ jobs:
         run: poetry version $TAG
       - name: set click version
         run: sed -i "s/\"0.0.0\"/\"${TAG}\"/" marlin_cli/marlin.py
-      - name: validate click version
-        run: cat marlin_cli/marlin.py
-      # - name: Set PyPI token
-      #   run: poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
-      # - name: Publish to PyPI
-      #   run: poetry publish --build -r testpypi
+      - name: Set PyPI token
+        run: poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
+      - name: Publish to PyPI
+        run: poetry publish --build
       
