@@ -115,8 +115,7 @@ def install(module):
 
     # todo: fetch module and version
     repository = module_details.get("repository")
-    # url = f"https://api.github.com/repos/{repository.get('owner')}/{repository.get('repo_name')}/tarball/{repository.get('version')}"
-    url = f"https://api.github.com/repos/{repository.get('owner')}/{repository.get('repo_name')}/tarball/developer_tasks"
+    url = f"https://api.github.com/repos/{repository.get('owner')}/{repository.get('repo_name')}/tarball/{repository.get('version')}"
     click.echo(f"Fetching module from {url}")
     response = requests.get(
         url=url,
